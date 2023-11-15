@@ -181,3 +181,39 @@ def is_carmichael(n):
         if f[1] != 1: return False
         if (n - 1) % (f[0] - 1) != 0: return False
     return True
+
+
+def rabin_miller_test(n, threshold=10):
+    """
+    Uses the Rabin-Miller test to determine if the given number is composite
+    Returns True if number is composite, and False if number is probably prime.
+    The threshold value can be adjusted to check for more numbers to find witnesses
+    """
+    if n % 2 == 0: return True
+    
+    m = n - 1
+    k = 0
+    while m % 2 == 0:
+        m //= 2
+        k += 1
+    q = (n - 1) // 2 ** k
+
+    t = 0
+    for a in range(2, n):
+        if gcd(a, n) != 1: continue
+        
+        t += 1
+        if t > threshold: break
+        
+        flag = False
+        if succ_square_power(a, q, n) == 1: flag = True
+        for i in range(0, k):
+            if succ_square_power(a, 2 ** i * q, n) == n - 1: flag = True
+        if flag: continue
+
+        return True
+
+    return False
+
+
+print(rabin_miller_test(118901521, 10))
